@@ -9,7 +9,15 @@ After this lecture, you should be able to answer the following:
 
 ### Examples of Operating Systems
 
-An Operating System is software that manages hardware resources and facilitates the communication between software and hardware. Microsoft Windows is an Operating System; so are Android and iOS, which are mobile operating systems. There are other less popular operating systems, such as OpenBSD, which focuses on security, and FreeBSD, which is used in networking systems. There is also Linux, which is used everywhere from servers to embedded devices. There are also real-time operating systems that are used in scenarios where execution time matters, such as in cars and airplanes.
+An Operating System is software that manages hardware resources and facilitates the communication between software and hardware.
+
+* Windows
+* Android
+* IOS
+* FreeBSD
+* OpenBSD
+* **Linux**
+* Real-time OSs
 
 ### Why do we need an operating system?
 
