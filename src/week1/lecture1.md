@@ -30,10 +30,11 @@ Let us take a look at this code example. This code opens a file and writes the t
 int main(){
    FILE *file;
 
-   file = fopen("file.txt", "w");
-
+   file = fopen("file.txt", "a");
    fprintf(file, "Hello");
    fclose(file);
+
+    puts("Write is done to file");
 
    return 0;
 }
