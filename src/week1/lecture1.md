@@ -43,8 +43,8 @@ After running this code, a file will be created with the text `Hello`, but how d
 
 Basically, the operating system is like a manager that controls who accesses resources and how.
 
-![OS jobs](./week1/osjobs.png)
-![OS jobs](./week1/cars.png)
+![OS jobs](./osjobs.png)
+![OS jobs](./cars.png)
 
 ### Why learning about Operating systems is important?
 
