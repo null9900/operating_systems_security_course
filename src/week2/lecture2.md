@@ -158,5 +158,6 @@ DAC is simple and flexible, but it has real weaknesses. What are the limitations
 - What does `chmod 750 file.txt` do? Break down each digit.
 - What is the difference between `chmod` and `chown`?
 - What is SUID?
+- Why do we need SUID bit in Linux? What its purpose?
 |||
 <div style="text-align: center; font-size: 0.8em; color: gray; margin-top: 50px;">Maysara Alhindi -- 2026</div>
