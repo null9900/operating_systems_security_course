@@ -5,3 +5,4 @@
 - [System calls](./week1/lecture2.md)
 # Access Control 
 - [Users in Linux](./week2/lecture1.md)
+- [DAC](./week2/lecture2.md)
