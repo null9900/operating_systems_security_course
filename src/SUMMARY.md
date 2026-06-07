@@ -7,3 +7,5 @@
 - [Users in Linux](./week2/lecture1.md)
 - [DAC](./week2/lecture2.md)
 - [MAC](./week2/lecture3.md)
+# eBPF
+- [Introduction to eBPF](./week3/lecture1.md)
