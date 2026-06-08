@@ -53,7 +53,7 @@ sudo apt install bpfcc-tools linux-headers-$(uname -r) python3-bpfcc
 ```
 
 ### Running existing tools
-The best way to get a feel for eBPF is to run tools that already exist. [BCC ships with a lot of them](https://github.com/iovisor/bcc/blob/master/tools/execsnoop.py).
+The best way to get a feel for eBPF is to run tools that already exist. [BCC ships with a lot of them](https://github.com/iovisor/bcc/).
 
 ![ebpf programs](https://raw.githubusercontent.com/iovisor/bcc/master/images/bcc_tracing_tools_2019.png)
 
