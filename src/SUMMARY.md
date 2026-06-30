@@ -9,3 +9,6 @@
 - [MAC](./week2/lecture3.md)
 # eBPF
 - [Introduction to eBPF](./week3/lecture1.md)
+- [eBPF Hook Points](./week3/lecture2.md)
+- [eBPF Implementation](./week3/lecture3.md)
+- [Seccomp](./week3/lecture4.md)
