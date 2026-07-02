@@ -18,9 +18,8 @@ After this lecture, you should be able to answer the following:
 
 ```py
 #!/usr/bin/python3
-
 from bcc import BPF
-import os
+import os, subprocess
 
 WATCH_PROCS = ["nc", "ssh", "bash"]
 WATCH_FILES = ["/etc/shadow", "/etc/passwd"]
@@ -60,9 +59,28 @@ TRACEPOINT_PROBE(syscalls, sys_enter_openat) {
 
 b = BPF(text=prog)
 
+RED = "\033[91m"; YELLOW = "\033[93m"; BOLD = "\033[1m"; RESET = "\033[0m"
+
+def desktop_popup(title, message):
+    try:
+        subprocess.run(["notify-send", "-u", "critical", title, message],
+                       check=False)
+    except FileNotFoundError:
+        pass
+
+def alert(kind, pid, comm, path):
+    if kind == "PROC":
+        print("\a" + RED + BOLD + "  PROCESS ALERT " + RESET
+              + RED + "pid=%-6d %-16s -> %s" % (pid, comm, path) + RESET)
+        desktop_popup("Watched process launched", "%s  (%s)" % (comm, path))
+    else:
+        print("\a" + YELLOW + BOLD + "  FILE ALERT    " + RESET
+              + YELLOW + "pid=%-6d %-16s opened %s" % (pid, comm, path) + RESET)
+        desktop_popup("Watched file opened", "%s opened %s" % (comm, path))
+
 def proc_match(path):
     if not WATCH_PROCS:
-        return True                       
+        return True
     return os.path.basename(path) in WATCH_PROCS
 
 def file_match(path):
@@ -75,16 +93,14 @@ def handle(ctx, data, size):
     path = e.filename.decode()
     comm = e.comm.decode()
     if e.type == 1 and proc_match(path):
-        print("EXEC  %-7d %-16s %s" % (e.pid, comm, path))
+        alert("PROC", e.pid, comm, path)
     elif e.type == 2 and file_match(path):
-        print("OPEN  %-7d %-16s %s" % (e.pid, comm, path))
-
+        alert("FILE", e.pid, comm, path)
 
 b["events"].open_ring_buffer(handle)
 
 print("Watching procs:", WATCH_PROCS or "ALL")
 print("Watching files:", WATCH_FILES or "ALL")
-print("%-5s %-7s %-16s %s" % ("TYPE", "PID", "COMM", "FILENAME"))
 print("Press Ctrl-C to stop.\n")
 
 while True:
@@ -94,6 +110,8 @@ while True:
         print("\nStopped.")
         break
 ```
+
+You also have to install `apt install dunst` for notifications to work.
 
 |||info
 Notice the design choice: The kernel reports every event, and Python decides what to keep. This is the simplest approach and easy to edit. For a high-traffic system you'd instead filter inside the kernel - passing the watchlist in through a hash map and dropping non-matches before they're ever sent - so only the events you care about cross into user space.
