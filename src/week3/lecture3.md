@@ -21,44 +21,6 @@ After this lecture, you should be able to answer the following:
 from bcc import BPF
 import os, subprocess
 
-WATCH_PROCS = ["nc", "ssh", "bash"]
-WATCH_FILES = ["/etc/shadow", "/etc/passwd"]
-
-prog = r"""
-BPF_RINGBUF_OUTPUT(events, 1 << 4);   // channel to user space
-
-#define EXEC 1
-#define OPEN 2
-
-struct event_t {
-    u32 pid;
-    u32 type;
-    char comm[16];        // the process that triggered the event
-    char filename[128];   // the program run, or file opened
-};
-
-// Shared by both hooks: fill in an event and send it up.
-static __always_inline
-void emit(u32 type, const char *fname) {
-    struct event_t *e = events.ringbuf_reserve(sizeof(*e));
-    if (!e) return;       // buffer full, drop this event
-    e->pid  = bpf_get_current_pid_tgid() >> 32;
-    e->type = type;
-    bpf_get_current_comm(e->comm, sizeof(e->comm));
-    bpf_probe_read_user_str(e->filename, sizeof(e->filename), fname);
-    events.ringbuf_submit(e, 0);
-}
-
-TRACEPOINT_PROBE(syscalls, sys_enter_execve) { 
-    emit(EXEC, args->filename); return 0; 
-}
-TRACEPOINT_PROBE(syscalls, sys_enter_openat) { 
-    emit(OPEN, args->filename); return 0; 
-}
-"""
-
-b = BPF(text=prog)
-
 RED = "\033[91m"; YELLOW = "\033[93m"; BOLD = "\033[1m"; RESET = "\033[0m"
 
 def desktop_popup(title, message):
@@ -96,6 +58,44 @@ def handle(ctx, data, size):
         alert("PROC", e.pid, comm, path)
     elif e.type == 2 and file_match(path):
         alert("FILE", e.pid, comm, path)
+
+WATCH_PROCS = ["nc", "ssh", "bash"]
+WATCH_FILES = ["/etc/shadow", "/etc/passwd"]
+
+prog = r"""
+BPF_RINGBUF_OUTPUT(events, 1 << 4);   // channel to user space
+
+#define EXEC 1
+#define OPEN 2
+
+struct event_t {
+    u32 pid;
+    u32 type;
+    char comm[16];        // the process that triggered the event
+    char filename[128];   // the program run, or file opened
+};
+
+// Shared by both hooks: fill in an event and send it up.
+static __always_inline
+void emit(u32 type, const char *fname) {
+    struct event_t *e = events.ringbuf_reserve(sizeof(*e));
+    if (!e) return;       // buffer full, drop this event
+    e->pid  = bpf_get_current_pid_tgid() >> 32;
+    e->type = type;
+    bpf_get_current_comm(e->comm, sizeof(e->comm));
+    bpf_probe_read_user_str(e->filename, sizeof(e->filename), fname);
+    events.ringbuf_submit(e, 0);
+}
+
+TRACEPOINT_PROBE(syscalls, sys_enter_execve) { 
+    emit(EXEC, args->filename); return 0; 
+}
+TRACEPOINT_PROBE(syscalls, sys_enter_openat) { 
+    emit(OPEN, args->filename); return 0; 
+}
+"""
+
+b = BPF(text=prog)
 
 b["events"].open_ring_buffer(handle)
 
