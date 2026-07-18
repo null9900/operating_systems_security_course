@@ -12,3 +12,5 @@
 - [eBPF Hook Points](./week3/lecture2.md)
 - [eBPF Implementation](./week3/lecture3.md)
 - [Seccomp](./week3/lecture4.md)
+# Container isolation
+- [Namespaces and Chroot](./week4/lecture1.md)
